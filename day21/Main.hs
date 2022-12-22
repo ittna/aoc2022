@@ -70,11 +70,17 @@ invertOp "/" x y = x * y
 
 solve :: Equation -> Int
 solve (Const x) = x
-solve (Exp (Var _) op (Const x)) = x
+-- var = x
+solve (Exp (Var _) "=" (Const x)) = x
+-- x op y = z -> x = z (invert op) y 
 solve (Exp (Exp x op (Const y)) "=" (Const z)) = solve $ Exp x "=" (Const $ invertOp op z y)
+-- y + x = z -> x = z - y
 solve (Exp (Exp (Const y) "+" x) "=" (Const z)) = solve $ Exp x "=" (Const $ invertOp "+" z y) 
+-- y - x = z -> x = y - z
 solve (Exp (Exp (Const y) "-" x) "=" (Const z)) = solve $ Exp x "=" (Const $ invertOp "+" y z) 
+-- y * x = z -> x = z / y
 solve (Exp (Exp (Const y) "*" x) "=" (Const z)) = solve $ Exp x "=" (Const $ invertOp "*" z y) 
+-- y / x = z -> x = y / z
 solve (Exp (Exp (Const y) "/" x) "=" (Const z)) = solve $ Exp x "=" (Const $ invertOp "/" y z) 
 
 part2 :: [Value] -> Int
